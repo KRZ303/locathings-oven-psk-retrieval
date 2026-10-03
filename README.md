@@ -1,16 +1,16 @@
 # Samsung oven PSK recovery with rooted Android 17
 
-This repository documents one successful Samsung oven recovery on 2026-10-03.
-It contains sanitized versions of the helpers used during that recovery.
+I recovered my Samsung oven's PSK on 2026-10-03.
+This repository contains cleaned-up versions of the scripts I used.
 
-The oven rejected LocalThings' certificate authentication. We recovered its existing owner pre-shared key (PSK) from SmartThings on a rooted Android phone.
-An authenticated local read then succeeded through Mbed TLS. After a separate transport patch and Home Assistant restart, the owner confirmed the oven connected.
+My oven rejected LocalThings' certificate authentication. I recovered its existing owner pre-shared key (PSK) from SmartThings on my rooted Android phone.
+I then authenticated and read from the oven through Mbed TLS. After patching the transport and integration and restarting Home Assistant, I added the oven successfully.
 
 **The key came from an account-specific encrypted `.datenc` file, not the main Core credential file.**
-The phone had to complete SmartThings registration before the matching credential appeared in the store we recovered.
+I completed SmartThings registration on that phone before finding the matching credential in its store.
 
 This is a version-specific research method, not a universal Samsung extractor or an official Samsung tool.
-The oven's retail model number was not established. Its reported board prefix was `LCD_R18_SCO_QMD_EU_22K`, with SmartThings profile `DA-KS-OVEN-0105X`.
+I haven't checked my oven's retail model number yet. It reports board prefix `LCD_R18_SCO_QMD_EU_22K`, with SmartThings profile `DA-KS-OVEN-0105X`.
 
 ## Tested environment
 
@@ -35,13 +35,13 @@ Other Android versions, work profiles, and filesystem layouts have not been vali
 2. The oven's unencrypted `/oic/sec/doxm` response advertised PSK security through `sct=1`.
 3. The available phone could use the cloud tile, but another phone had performed the original pairing.
 4. The main Core store, `oic_svr_db_client.dat`, and its live native credential list contained ten certificates and no PSK.
-5. The owner removed the oven and completed registration again through SmartThings on the rooted phone.
+5. I removed the oven and registered it again through SmartThings on my rooted phone.
 6. Core still showed no PSK. An account-specific `.datenc` file held the relevant credential; its plaintext `.dat` companion contained baseline certificates.
 7. The app's existing CryptoManager unwrapped its existing IoTivity storage key. The host verified the ciphertext MAC and decoded the encrypted store.
 8. Exactly one type-1 credential matched the oven's device UUID. Its base64 value decoded to a 16-byte PSK.
 9. The credential resource's owner UUID matched the oven's separately reported `devowneruuid`.
 10. A separate Mbed TLS test authenticated and read `/oic/d`, matching the expected oven identity.
-11. Local transport and integration patches enabled the same identity in Home Assistant. The owner imported the owner PSK and confirmed connection.
+11. I patched the transport and integration, imported the owner PSK into Home Assistant, and confirmed the connection.
 
 ## Boundaries and risks
 
@@ -69,8 +69,8 @@ Python, Frida, swap, and crash dumps can retain memory; this is not a secure-mem
 ## Prepare the tools
 
 The following commands target the tested macOS/Linux-style environment.
-The sanitized helpers passed offline tests, but were not rerun against the phone after publication cleanup.
-The successful live recovery used their original, device-specific versions.
+The cleaned-up scripts passed offline tests, but I haven't rerun them against my phone.
+I used their original, device-specific versions for the live recovery.
 
 1. Install ADB from the official [Android Platform-Tools distribution](https://developer.android.com/tools/releases/platform-tools).
 2. Clone this repository.
@@ -216,7 +216,7 @@ Do not paste the IoTivity storage key, account store UUID, or oven UUID into the
 
 ## Why extraction alone did not finish this oven
 
-Our owner UUID contained a NUL byte in its binary representation.
+My owner UUID contained a NUL byte in its binary representation.
 The original transport rejected it with:
 
 ```text
@@ -240,10 +240,10 @@ The subsequent fix covered two projects:
 The local patch selected Mbed TLS only for identities containing zero bytes.
 Other PSK identities and certificate sessions retained the OpenSSL path.
 The patched session authenticated on macOS and from Home Assistant's Linux runtime before deployment.
-After the authorized patch deployment and restart, the existing washer resumed observations.
-The owner then confirmed successful oven setup in Home Assistant.
-A subsequent read-only HA check found both the oven and washer entries loaded.
-The oven currently exposes only a connection-mode sensor, reporting `poll`; diagnostics show no active observations.
+After I deployed the patches and restarted HA, my existing washer resumed observations.
+I then added my oven successfully in Home Assistant.
+A subsequent read-only HA check found both entries loaded.
+My oven currently exposes only a connection-mode sensor, reporting `poll`; diagnostics show no active observations.
 This proves authentication and setup, not full oven entity coverage or working heating controls.
 
 **This extraction repository does not contain or install those separate patches.**
@@ -311,7 +311,7 @@ Do not remove unrelated forwards or kill all Frida processes.
 - `requirements.txt`: the recovery environment's dependency versions.
 - `.gitignore`: excludes common recovery artifacts and credentials.
 
-The README was reconstructed from the full conversation and checked against the saved research notes and helper sources.
+I documented the recovery from my research notes, scripts, and session history.
 Public examples contain placeholders or synthetic values, not recovered credentials.
 The private archive remains separate and unchanged.
 It includes material intentionally excluded here: credentials, raw receipts, app databases, APK/native binaries, screenshots, and HA backups.
