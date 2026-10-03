@@ -1,0 +1,5 @@
+# Versions used during the successful recovery. Keep the Android server matched.
+frida==17.21.0
+frida-tools==14.10.4
+cbor2==6.1.5
+cryptography==50.0.2
