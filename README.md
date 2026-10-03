@@ -10,7 +10,7 @@ An authenticated local read then succeeded through Mbed TLS. After a separate tr
 The phone had to complete SmartThings registration before the matching credential appeared in the store we recovered.
 
 This is a version-specific research method, not a universal Samsung extractor or an official Samsung tool.
-The oven's retail model number was not established. Its reported profile was `DA-KS-OVEN-0105X`, described as a Samsung LCD oven.
+The oven's retail model number was not established. Its reported board prefix was `LCD_R18_SCO_QMD_EU_22K`, with SmartThings profile `DA-KS-OVEN-0105X`.
 
 ## Tested environment
 
@@ -242,9 +242,14 @@ Other PSK identities and certificate sessions retained the OpenSSL path.
 The patched session authenticated on macOS and from Home Assistant's Linux runtime before deployment.
 After the authorized patch deployment and restart, the existing washer resumed observations.
 The owner then confirmed successful oven setup in Home Assistant.
+A subsequent read-only HA check found both the oven and washer entries loaded.
+The oven currently exposes only a connection-mode sensor, reporting `poll`; diagnostics show no active observations.
+This proves authentication and setup, not full oven entity coverage or working heating controls.
 
-**This extraction repository does not contain, install, or publish those separate transport patches.**
-At publication, their commits remained local on branch `krz303/use-mbed-tls-fix-zero-byte-in-uuid` in the two code forks.
+**This extraction repository does not contain or install those separate patches.**
+The [transport PR](https://github.com/QuiteYellow/SmartThings-Local/pull/115) and [integration PR](https://github.com/mbillow/localthings/pull/575) publish the changes for review.
+The optional Mbed TLS native module requires a separate build for the target architecture and C library.
+The transport wheel contains its source, not a compiled module; installing the integration change alone does not enable binary identities.
 Do not assume an upstream release supports this identity merely because this recovery worked.
 Consult [LocalThings issue #435](https://github.com/mbillow/localthings/issues/435) for the upstream discussion.
 If your identity contains zero bytes, check transport support before expecting the recovered key to authenticate.
